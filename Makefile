@@ -1,4 +1,5 @@
 DEBUG 				?= 1
+LIB_PATH			?= stm32f746g-discovery-gcc
 
 TOOLCHAIN           ?= arm-none-eabi-
 CC                  := $(TOOLCHAIN)gcc
@@ -26,21 +27,21 @@ PROJ_SRC            := $(shell find src -name '*.c' -or -name '*.cpp' -or -name 
 PROJ_OBJ            := $(addsuffix .o,$(basename $(PROJ_SRC)))
 
 # CMSIS
-CMSIS_DIR           := ../../lib/Drivers/CMSIS
+CMSIS_DIR           := $(LIB_PATH)/lib/Drivers/CMSIS
 CMSIS_DEVICE_DIR    := $(CMSIS_DIR)/Device/ST/STM32F7xx
 
 # Local directory for storing compiled HAL/BSP objects
 DEPS                := .deps
 
 # HAL setup
-HAL_DIR             := ../../lib/Drivers/STM32F7xx_HAL_Driver
+HAL_DIR             := $(LIB_PATH)/lib/Drivers/STM32F7xx_HAL_Driver
 HAL_INC             := $(HAL_DIR)/Inc
 HAL_SRC             := $(shell find $(HAL_DIR)/Src -name '*.c')
 HAL_OBJ_DIR         := $(DEPS)/hal
 HAL_OBJ             := $(patsubst %.c,%.o,$(addprefix $(HAL_OBJ_DIR)/, $(notdir $(HAL_SRC))))
 
 # BSP setup
-BSP_DIR             := ../../lib/Drivers/BSP/STM32746G-Discovery
+BSP_DIR             := $(LIB_PATH)/lib/Drivers/BSP/STM32746G-Discovery
 BSP_INC             := $(BSP_DIR)
 BSP_SRC             := $(addsuffix .c, $(addprefix $(BSP_DIR)/stm32746g_discovery_, $(BSP)))
 BSP_OBJ_DIR         := $(DEPS)/bsp

@@ -1,0 +1,3 @@
+[submodule "stm32f746g-discovery-gcc"]
+	path = stm32f746g-discovery-gcc
+	url = https://github.com/jaz303/stm32f746g-discovery-gcc.git
