@@ -1,0 +1,6 @@
+.deps
+build
+*.o
+*.elf
+*.hex
+*.bin
