@@ -4,11 +4,12 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/stm32f746g-discovery-gcc/lib/Drivers/CMSIS/Device/ST/STM32F7xx/Include/",
+                "${workspaceFolder}/stm32f746g-discovery-gcc/lib/Drivers/CMSIS/Device/ST/STM32F7xx/Include",
                 "${workspaceFolder}/stm32f746g-discovery-gcc/lib/Drivers/STM32F7xx_HAL_Driver/Inc",
                 "${workspaceFolder}/include",
                 "${workspaceFolder}/stm32f746g-discovery-gcc/lib/Drivers/CMSIS/Include",
-                "${workspaceFolder}/stm32f746g-discovery-gcc/lib/Drivers/BSP/STM32746G-Discovery/"
+                "${workspaceFolder}/stm32f746g-discovery-gcc/lib/Drivers/BSP/STM32746G-Discovery",
+                "${workspaceFolder}/stm32f746g-discovery-gcc/lib/Drivers/BSP/Components"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/arm-none-eabi-gcc",
