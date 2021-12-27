@@ -58,6 +58,16 @@ int main(void) {
          - Low Level Initialization
        */
     HAL_Init();
+    __HAL_RCC_GPIOI_CLK_ENABLE();
+    __GPIOA_CLK_ENABLE();
+    GPIO_InitTypeDef gpio_init_conf = {
+        .Alternate = 0,
+        .Mode = GPIO_MODE_OUTPUT_PP,
+        .Pin = GPIO_PIN_1,
+        .Pull = GPIO_NOPULL,
+        .Speed = GPIO_SPEED_LOW
+    };
+    HAL_GPIO_Init(GPIOI, &gpio_init_conf);
 
     /* Configure the System clock to have a frequency of 216 MHz */
     SystemClock_Config();

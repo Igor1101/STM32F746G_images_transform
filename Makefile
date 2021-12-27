@@ -7,7 +7,12 @@ CXX 				:= $(TOOLCHAIN)g++
 AS                  := $(TOOLCHAIN)as
 LD                  := $(TOOLCHAIN)gcc
 OBJCOPY             := $(TOOLCHAIN)objcopy
-STRIP 				:= $(TOOLCHAIN)strip
+SIZE		    := $(TOOLCHAIN)size
+STRIP 		    := $(TOOLCHAIN)strip
+# additional
+#
+ST_INFO		    ?= st-info
+ST_FLASH	    ?= st-flash
 
 PRODUCT_NAME        := main
 BUILD               := build
@@ -57,9 +62,9 @@ INCLUDE += -I$(BSP_INC)
 MCPU := cortex-m7
 PART := STM32F746xx
 FLAGS := -mcpu=$(MCPU) -mthumb
-CFLAGS := $(FLAGS) -Os -ffunction-sections -fdata-sections $(INCLUDE) -D$(PART)
+CFLAGS := $(FLAGS) -Os -ffunction-sections -fdata-sections $(INCLUDE) -D$(PART) -fmessage-length=0 -fdata-sections -ffunction-sections -Wcast-align -Wcast-qual -Wvla -Wshadow -Wsuggest-attribute=const -Wmissing-format-attribute -Wuninitialized -Winit-self -Wdouble-promotion -Wno-unused-local-typedefs
 CXXFLAGS := $(CFLAGS)
-LDFLAGS := $(FLAGS) -specs=nosys.specs -Wl,--gc-sections
+LDFLAGS := $(FLAGS) -specs=nano.specs -Wl,--gc-sections   -ffreestanding -Wl,-defsym,__dso_handle=0 -Wl,-Map=build/output.map
 ASFLAGS := $(FLAGS)
 
 ifeq ($(DEBUG),1)
@@ -89,7 +94,7 @@ $(BSP_OBJ_DIR)/%.o: %.c
 %.hex: %.elf
 	$(OBJCOPY) -O ihex $< $@
 
-all: $(PRODUCT_ELF) $(PRODUCT_HEX) $(PRODUCT_BIN)
+all: $(PRODUCT_ELF) $(PRODUCT_HEX) $(PRODUCT_BIN) pr_size
 
 $(PRODUCT_ELF): $(PRODUCT_TMP) $(DEBUG_SYMBOLS)
 	cp $(PRODUCT_TMP) $(PRODUCT_ELF)
@@ -122,4 +127,11 @@ vpath %.c $(HAL_DIR)/Src $(BSP_DIR)
 clean:
 	rm -rf .deps $(PROJ_OBJ)
 
+pr_size:
+	$(SIZE) $(PRODUCT_ELF)	
+
+st_link_deploy:
+	$(ST_INFO) --probe
+	$(ST_FLASH) write $(PRODUCT_BIN)  0x08000000
+	$(ST_FLASH) reset
 .PHONY: hal_obj obj clean all deploy

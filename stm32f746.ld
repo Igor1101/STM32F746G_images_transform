@@ -53,6 +53,21 @@ SECTIONS
     {
         . = ALIGN(4);
         *(.text*)          /* .text* sections (code) */
+        KEEP(*(.init))
+        KEEP(*(.fini))
+          /* .ctors */
+    *crtbegin.o(.ctors)
+    *crtbegin?.o(.ctors)
+    *(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
+    *(SORT(.ctors.*))
+    *(.ctors)
+
+    /* .dtors */
+    *crtbegin.o(.dtors)
+    *crtbegin?.o(.dtors)
+    *(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
+    *(SORT(.dtors.*))
+    *(.dtors)
         *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
     /*  *(.glue_7)   */    /* glue arm to thumb code */
     /*  *(.glue_7t)  */    /* glue thumb to arm code */
