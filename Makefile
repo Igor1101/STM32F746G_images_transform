@@ -27,10 +27,6 @@ DEBUG_SYMBOLS 		:= $(PRODUCT_BASE).debug
 #BSP                 := audio camera eeprom lcd qspi sd sdram ts
 BSP := 
 
-# Project source
-PROJ_SRC            := $(shell find src -name '*.c' -or -name '*.cpp' -or -name '*.s')
-PROJ_OBJ            := $(addsuffix .o,$(basename $(PROJ_SRC)))
-
 # CMSIS
 CMSIS_DIR           := $(LIB_PATH)/lib/Drivers/CMSIS
 CMSIS_DEVICE_DIR    := $(CMSIS_DIR)/Device/ST/STM32F7xx
@@ -52,6 +48,10 @@ BSP_SRC             := $(addsuffix .c, $(addprefix $(BSP_DIR)/stm32746g_discover
 BSP_OBJ_DIR         := $(DEPS)/bsp
 BSP_OBJ             := $(patsubst %.c,%.o,$(addprefix $(BSP_OBJ_DIR)/, $(notdir $(BSP_SRC))))
 
+# Project source
+PROJ_SRC            := $(shell find src -name '*.c' -or -name '*.cpp' -or -name '*.s')
+PROJ_SRC            += $(shell find $(BSP_DIR) -name '*.c' -or -name '*.cpp' -or -name '*.s')
+PROJ_OBJ            := $(addsuffix .o,$(basename $(PROJ_SRC)))
 # Include path
 INCLUDE := -Iinclude -Iconfig
 INCLUDE += -I$(CMSIS_DEVICE_DIR)/Include
@@ -62,15 +62,15 @@ INCLUDE += -I$(BSP_INC)
 MCPU := cortex-m7
 PART := STM32F746xx
 FLAGS := -mcpu=$(MCPU) -mthumb
-CFLAGS := $(FLAGS) -Os -ffunction-sections -fdata-sections $(INCLUDE) -D$(PART) -fmessage-length=0 -fdata-sections -ffunction-sections -Wcast-align -Wcast-qual -Wvla -Wshadow -Wsuggest-attribute=const -Wmissing-format-attribute -Wuninitialized -Winit-self -Wdouble-promotion -Wno-unused-local-typedefs
+CFLAGS := $(FLAGS) -Os   -mthumb -mfloat-abi=hard -mfpu=fpv5-sp-d16 -D__FPU_PRESENT=1 -MD -MP -MF  -ffunction-sections -fdata-sections $(INCLUDE) -D$(PART) -fmessage-length=0 -fdata-sections -ffunction-sections -Wcast-align -Wcast-qual -Wvla -Wshadow -Wsuggest-attribute=const -Wmissing-format-attribute -Wuninitialized -Winit-self -Wdouble-promotion -Wno-unused-local-typedefs -lm
 CXXFLAGS := $(CFLAGS)
-LDFLAGS := $(FLAGS) -specs=nano.specs -Wl,--gc-sections   -ffreestanding -Wl,-defsym,__dso_handle=0 -Wl,-Map=build/output.map
+LDFLAGS := $(FLAGS) -mfloat-abi=hard -mfpu=fpv5-sp-d16 -specs=nano.specs  -specs=nosys.specs -Wl,--gc-sections   -ffreestanding -Wl,-defsym,__dso_handle=0 -Wl,-Map=build/output.map -Wl,--print-memory-usage -lm --static
 ASFLAGS := $(FLAGS)
 
 ifeq ($(DEBUG),1)
-	CFLAGS += -g
-	LDFLAGS += -g
-	ASFLAGS += -g
+	CFLAGS += -g3
+	LDFLAGS += -g3
+	ASFLAGS += -g3
 endif
 
 $(HAL_OBJ_DIR)/%.o: %.c
