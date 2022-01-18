@@ -3,6 +3,8 @@
     "files.associations": {
         "stm32f7xx_hal.h": "c",
         "stm32f7xx_hal_conf.h": "c",
-        "stm32f7xx.h": "c"
+        "stm32f7xx.h": "c",
+        "image_proc.h": "c",
+        "sdram_alloc.h": "c"
     }
 }
