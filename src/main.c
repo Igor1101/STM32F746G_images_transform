@@ -36,8 +36,10 @@
   */
 
 #include "stm32f7xx_hal.h"
+#include "image_proc.h"
+#include "serial.h"
 
-
+UART_HandleTypeDef huart1;
 static void SystemClock_Config(void);
 static void Error_Handler(void);
 static void MPU_Config(void);
@@ -59,7 +61,11 @@ int main(void) {
        */
     HAL_Init();
     __HAL_RCC_GPIOI_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_USART6_CLK_ENABLE();
     __GPIOA_CLK_ENABLE();
+    __GPIOC_CLK_ENABLE();
+
     GPIO_InitTypeDef gpio_init_conf = {
         .Alternate = 0,
         .Mode = GPIO_MODE_OUTPUT_PP,
@@ -68,14 +74,34 @@ int main(void) {
         .Speed = GPIO_SPEED_LOW
     };
     HAL_GPIO_Init(GPIOI, &gpio_init_conf);
+    gpio_init_conf.Pin = GPIO_PIN_6;
+    gpio_init_conf.Mode = GPIO_MODE_AF_PP;
+    gpio_init_conf.Alternate = GPIO_AF8_USART6;
+    gpio_init_conf.Speed = GPIO_SPEED_HIGH;
+    gpio_init_conf.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOC, &gpio_init_conf);
+    gpio_init_conf.Pin = GPIO_PIN_7;
+    gpio_init_conf.Mode = GPIO_MODE_AF_PP;
+    gpio_init_conf.Alternate = GPIO_AF8_USART6;
+    gpio_init_conf.Speed = GPIO_SPEED_HIGH;
+    gpio_init_conf.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOC, &gpio_init_conf);
 
     /* Configure the System clock to have a frequency of 216 MHz */
     SystemClock_Config();
-
-
+    huart1.Instance        = USART6;
+    huart1.Init.BaudRate   = 115200;
+    huart1.Init.WordLength = UART_WORDLENGTH_8B;
+    huart1.Init.StopBits   = UART_STOPBITS_1;
+    huart1.Init.Parity     = UART_PARITY_NONE;
+    huart1.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+    huart1.Init.Mode       = UART_MODE_TX_RX;
+    if (HAL_UART_Init(&huart1) != HAL_OK)
+        asm("bkpt 255");
+    pr_debugln("uart init!");
+    image_proc();
     /* Add your application code here
        */
-
 
     /* Infinite loop */
     while (1)
@@ -85,7 +111,7 @@ int main(void) {
         HAL_GPIO_WritePin(GPIOI, GPIO_PIN_1, GPIO_PIN_RESET);
         HAL_Delay(500);
     }
-}
+} // main
 
 /**
   * @brief  System Clock Configuration
